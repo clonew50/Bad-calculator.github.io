@@ -388,24 +388,28 @@
 
     /* Glitch message */
     .glitch-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: clamp(45px, 10vw, 120px);
-      font-weight: 900;
-      font-family: 'Courier New', 'Share Tech Mono', monospace;
-      color: #ff0055;
-      pointer-events: none;
-      z-index: 10001;
-      letter-spacing: 8px;
-      text-shadow: 4px 0 cyan, -4px 0 red, 0 0 60px #ff0055;
-      opacity: 0;
-      transition: opacity 0.06s;
-      white-space: nowrap;
-      text-align: center;
-      line-height: 1;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(32px, 9vw, 110px);
+    font-weight: 900;
+    font-family: 'Courier New', 'Share Tech Mono', monospace;
+    color: #ff0055;
+    pointer-events: none;
+    z-index: 10001;
+    letter-spacing: clamp(2px, 1.5vw, 8px);
+    text-shadow: 4px 0 cyan, -4px 0 red, 0 0 60px #ff0055;
+    opacity: 0;
+    transition: opacity 0.06s;
+    white-space: normal;           /* 🔥 السر: يسمح بإنزال النص لسطر جديد */
+    word-break: break-word;        /* يكسر الكلمة لو اضطُر */
+    text-align: center;
+    line-height: 1.2;
+    max-width: 90vw;               /* لا يزيد عن 90% من عرض الشاشة */
+    padding: 0 8px;
     }
+    
     .glitch-message.active {
       opacity: 1;
       animation: glitchText 0.18s infinite;
