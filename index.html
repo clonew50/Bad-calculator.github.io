@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>GLITCH CALC // ☠️ MOBILE EDITION</title>
+  <style>
+    :root {
+      --bg: #030307;
+      --pink: #ff0055;
+      --cyan: #00f0ff;
+      --green: #39ff14;
+      --yellow: #ffcc00;
+      --purple: #b300ff;
+      --font-xl: clamp(22px, 5vw, 30px);
+      --font-lg: clamp(16px, 3.5vw, 20px);
+      --font-md: clamp(11px, 2.5vw, 14px);
+      --font-sm: clamp(9px, 2vw, 12px);
+      --btn-pad: clamp(13px, 2.5vw, 18px) clamp(20px, 4vw, 34px);
+      --gap: clamp(8px, 1.5vw, 16px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    body {
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      font-family: 'Courier New', 'VT323', 'Share Tech Mono', monospace;
+      overflow: hidden;
+      position: relative;
+      touch-action: manipulation;
+      padding: 10px;
+    }
+
+    /* CRT Scanlines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.12) 2px,
+          rgba(0, 0, 0, 0.12) 4px);
+      pointer-events: none;
+      z-index: 9997;
+    }
+
+    /* RGB offset layer */
+    .rgb-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9996;
+      opacity: 0;
+      transition: opacity 0.3s;
+      mix-blend-mode: screen;
+      background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(255, 0, 85, 0.08) 100%);
+    }
+    .rgb-layer.active {
+      opacity: 1;
+      animation: rgbPulse 0.6s ease-out;
+    }
+    @keyframes rgbPulse {
+      0% {
+        opacity: 0;
+        transform: translate(3px, -2px);
+      }
+      40% {
+        opacity: 0.7;
+        transform: translate(-2px, 3px);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(0, 0);
+      }
+    }
+
+    .glitch-box {
+      background: #0c0c10;
+      border: 3px solid #333;
+      padding: clamp(20px, 3vw, 35px) clamp(15px, 3vw, 28px) clamp(18px, 2.5vw, 28px);
+      width: min(500px, 96vw);
+      max-width: 500px;
+      box-shadow:
+        6px 6px 0 #000,
+        0 0 40px rgba(255, 0, 85, 0.4),
+        0 0 70px rgba(0, 240, 255, 0.2),
+        inset 0 0 40px rgba(0, 0, 0, 0.7);
+      text-align: center;
+      position: relative;
+      z-index: 20;
+      clip-path: polygon(0% 0%, 100% 0%, 97% 3%, 100% 6%, 96% 10%, 100% 100%, 0% 100%, 4% 97%, 0% 94%, 3% 90%);
+      transition: transform 0.08s, filter 0.3s;
+      animation: floatBox 7s infinite ease-in-out;
+    }
+    @keyframes floatBox {
+      0%,
+      100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      30% {
+        transform: translateY(-3px) rotate(0.3deg);
+      }
+      70% {
+        transform: translateY(3px) rotate(-0.3deg);
+      }
+    }
+    .glitch-box.shake {
+      animation: brutalShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards, floatBox 7s infinite ease-in-out;
+    }
+    @keyframes brutalShake {
+      0%,
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      8% {
+        transform: translate(-10px, 5px) rotate(-3.5deg);
+      }
+      18% {
+        transform: translate(9px, -6px) rotate(4deg);
+      }
+      28% {
+        transform: translate(-12px, -2px) rotate(-4.5deg);
+      }
+      38% {
+        transform: translate(7px, 8px) rotate(2.5deg);
+      }
+      48% {
+        transform: translate(-8px, -7px) rotate(-3deg);
+      }
+      58% {
+        transform: translate(11px, 3px) rotate(4.5deg);
+      }
+      68% {
+        transform: translate(-5px, 9px) rotate(-2deg);
+      }
+      78% {
+        transform: translate(4px, -8px) rotate(1.5deg);
+      }
+      88% {
+        transform: translate(-9px, -4px) rotate(-3.5deg);
+      }
+    }
+
+    .brand {
+      font-size: var(--font-md);
+      letter-spacing: 4px;
+      color: #555;
+      margin-bottom: clamp(16px, 2.5vw, 24px);
+      text-transform: uppercase;
+      text-shadow: 0 0 12px #ff0055;
+      word-break: break-all;
+    }
+    .brand span {
+      color: var(--cyan);
+      animation: flicker 1.3s infinite;
+    }
+    @keyframes flicker {
+      0%,
+      100% {
+        opacity: 1;
+      }
+      44% {
+        opacity: 0.5;
+      }
+      47% {
+        opacity: 0.08;
+      }
+      51% {
+        opacity: 0.75;
+      }
+      54% {
+        opacity: 1;
+      }
+    }
+
+    .screen {
+      background: #071207;
+      border: 2px solid #1f3a1f;
+      padding: clamp(8px, 1.5vw, 12px);
+      margin-bottom: clamp(18px, 2.5vw, 25px);
+      box-shadow: inset 0 0 25px rgba(0, 255, 0, 0.2);
+      display: flex;
+      align-items: center;
+      border-radius: 2px;
+      position: relative;
+    }
+    .screen::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      pointer-events: none;
+      animation: screenBorderGlow 2s infinite;
+    }
+    @keyframes screenBorderGlow {
+      0%,
+      100% {
+        border-color: rgba(57, 255, 20, 0.3);
+      }
+      50% {
+        border-color: rgba(57, 255, 20, 0.7);
+      }
+    }
+    #equationInput {
+      width: 100%;
+      padding: clamp(10px, 1.8vw, 14px) clamp(8px, 1.5vw, 14px);
+      font-size: var(--font-xl);
+      background: transparent;
+      border: none;
+      color: #b3ffb3;
+      text-align: right;
+      letter-spacing: 3px;
+      font-family: 'VT323', 'Courier New', 'Share Tech Mono', monospace;
+      caret-color: #39ff14;
+      outline: none;
+      text-shadow: 0 0 12px #39ff14;
+      font-weight: bold;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+    #equationInput::placeholder {
+      color: #153015;
+      letter-spacing: 2px;
+      font-size: clamp(16px, 3vw, 22px);
+      opacity: 0.7;
+    }
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: clamp(24px, 4vw, 30px);
+      background: #39ff14;
+      animation: blink 0.85s step-end infinite;
+      margin-left: 3px;
+      box-shadow: 0 0 10px #39ff14;
+      flex-shrink: 0;
+    }
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* Chaos meter */
+    .chaos-meter-wrap {
+      margin-bottom: clamp(14px, 2vw, 20px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--font-sm);
+      color: #666;
+      letter-spacing: 1px;
+    }
+    .chaos-meter {
+      flex: 1;
+      height: 6px;
+      background: #1a1a1a;
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: inset 0 0 6px #000;
+    }
+    .chaos-meter-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #39ff14, #ffcc00, #ff0055, #b300ff);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 3px;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: var(--gap);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: var(--btn-pad);
+      font-size: var(--font-lg);
+      font-family: 'Courier New', 'Share Tech Mono', monospace;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border: 3px solid;
+      text-transform: uppercase;
+      transition: 0.06s;
+      clip-path: polygon(5% 0%, 95% 0%, 100% 10%, 100% 90%, 95% 100%, 5% 100%, 0% 90%, 0% 10%);
+      background: #1a000a;
+      color: var(--pink);
+      border-color: var(--pink);
+      box-shadow: 0 0 22px rgba(255, 0, 85, 0.6), 0 5px 0 #4a001a;
+      text-shadow: 0 0 10px var(--pink);
+      flex: 1 1 auto;
+      min-width: 100px;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.03);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .btn:active::after {
+      opacity: 1;
+    }
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.5), 0 1px 0 #4a001a;
+      transition: 0.03s;
+    }
+    .btn-clear {
+      background: #000f18;
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 22px rgba(0, 240, 255, 0.6), 0 5px 0 #002835;
+      text-shadow: 0 0 10px var(--cyan);
+    }
+    .btn-clear:active {
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), 0 1px 0 #002835;
+    }
+
+    /* History toast */
+    .history-toast {
+      position: fixed;
+      bottom: clamp(16px, 3vw, 30px);
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: #0f0f15;
+      border: 1px solid #333;
+      color: #aaa;
+      font-family: 'Courier New', monospace;
+      font-size: var(--font-sm);
+      padding: 8px 18px;
+      border-radius: 4px;
+      z-index: 10003;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      letter-spacing: 2px;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+    .history-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Achievement popup */
+    .achievement {
+      position: fixed;
+      top: clamp(10px, 2vw, 20px);
+      right: clamp(10px, 2vw, 20px);
+      background: #0f0f15;
+      border: 2px solid var(--yellow);
+      color: var(--yellow);
+      padding: clamp(10px, 2vw, 16px) clamp(14px, 2.5vw, 22px);
+      font-family: 'Courier New', monospace;
+      font-size: var(--font-sm);
+      z-index: 10004;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(120%);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      letter-spacing: 2px;
+      box-shadow: 0 0 25px rgba(255, 204, 0, 0.5);
+      border-radius: 2px;
+    }
+    .achievement.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Glitch message */
+    .glitch-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: clamp(45px, 10vw, 120px);
+      font-weight: 900;
+      font-family: 'Courier New', 'Share Tech Mono', monospace;
+      color: #ff0055;
+      pointer-events: none;
+      z-index: 10001;
+      letter-spacing: 8px;
+      text-shadow: 4px 0 cyan, -4px 0 red, 0 0 60px #ff0055;
+      opacity: 0;
+      transition: opacity 0.06s;
+      white-space: nowrap;
+      text-align: center;
+      line-height: 1;
+    }
+    .glitch-message.active {
+      opacity: 1;
+      animation: glitchText 0.18s infinite;
+    }
+    @keyframes glitchText {
+      0% {
+        transform: translate(-50%, -50%) skew(0deg);
+        text-shadow: 4px 0 cyan, -4px 0 red;
+      }
+      25% {
+        transform: translate(-47%, -52%) skew(3deg);
+        text-shadow: -5px 0 cyan, 5px 0 red;
+      }
+      50% {
+        transform: translate(-53%, -48%) skew(-3deg);
+        text-shadow: 3px -3px cyan, -3px 3px red;
+      }
+      75% {
+        transform: translate(-49%, -51%) skew(-4deg);
+        text-shadow: -5px 2px cyan, 5px -2px red;
+      }
+      100% {
+        transform: translate(-50%, -50%) skew(0deg);
+        text-shadow: 4px 0 cyan, -4px 0 red;
+      }
+    }
+
+    /* Pixels */
+    .pixel {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10002;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(14px, 2.5vw, 22px);
+      animation: fall linear forwards;
+      text-shadow: 0 0 15px currentColor;
+      font-weight: bold;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(-40px) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+      70% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(105vh) rotate(720deg) scale(0.3);
+        opacity: 0;
+      }
+    }
+
+    .bg-flash {
+      animation: bgFlash 0.25s ease-out;
+    }
+    @keyframes bgFlash {
+      0% {
+        background: #1a0008;
+      }
+      100% {
+        background: var(--bg);
+      }
+    }
+
+    #glitchCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10000;
+    }
+
+    .input-error {
+      animation: inputShake 0.3s ease;
+    }
+    @keyframes inputShake {
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+      25% {
+        transform: translateX(-6px);
+      }
+      75% {
+        transform: translateX(6px);
+      }
+    }
+
+    /* Overlay flash */
+    .overlay-flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 0, 85, 0.12);
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    /* Screen tear effect */
+    .screen-tear {
+      position: fixed;
+      left: 0;
+      width: 100%;
+      height: clamp(20px, 4vw, 45px);
+      pointer-events: none;
+      z-index: 10005;
+      opacity: 0;
+      transition: opacity 0.15s;
+      mix-blend-mode: difference;
+    }
+
+    /* Media query for very small screens */
+    @media (max-width: 360px) {
+      .btn-row {
+        gap: 6px;
+      }
+      .btn {
+        letter-spacing: 1px;
+        min-width: 80px;
+      }
+      .glitch-message {
+        letter-spacing: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="glitchCanvas"></canvas>
+  <div class="rgb-layer" id="rgbLayer"></div>
+  <div class="overlay-flash" id="overlayFlash"></div>
+  <div class="screen-tear" id="screenTear"></div>
+  <div class="glitch-message" id="glitchMessage">F*CK YOU</div>
+  <div class="history-toast" id="historyToast"></div>
+  <div class="achievement" id="achievement"></div>
+
+  <div class="glitch-box" id="calcBox">
+    <div class="brand">G̷L̷I̷T̷C̷H̷ <span>//</span> C̶A̶L̶C̶</div>
+
+    <!-- Chaos meter -->
+    <div class="chaos-meter-wrap">
+      <span>☠️</span>
+      <div class="chaos-meter">
+        <div class="chaos-meter-fill" id="chaosFill" style="width:0%"></div>
+      </div>
+      <span id="chaosLabel">LV.0</span>
+    </div>
+
+    <div class="screen">
+      <input type="text" id="equationInput" placeholder="2+2=?" autocomplete="off" spellcheck="false" inputmode="none">
+      <span class="cursor"></span>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="solveBtn">▶ SOLVE</button>
+      <button class="btn btn-clear" id="clearBtn">⌫ CLEAR</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ==================== العناصر ====================
+      const inputEl = document.getElementById('equationInput');
+      const calcBox = document.getElementById('calcBox');
+      const glitchMsg = document.getElementById('glitchMessage');
+      const canvas = document.getElementById('glitchCanvas');
+      const ctx = canvas.getContext('2d');
+      const body = document.body;
+      const overlayFlash = document.getElementById('overlayFlash');
+      const rgbLayer = document.getElementById('rgbLayer');
+      const screenTear = document.getElementById('screenTear');
+      const chaosFill = document.getElementById('chaosFill');
+      const chaosLabel = document.getElementById('chaosLabel');
+      const historyToast = document.getElementById('historyToast');
+      const achievement = document.getElementById('achievement');
+      const solveBtn = document.getElementById('solveBtn');
+      const clearBtn = document.getElementById('clearBtn');
+
+      // ==================== المتغيرات ====================
+      let chaos = 0;
+      const maxChaos = 15;
+      let autoGlitchInterval = null;
+      let glitchTimeout = null;
+      let history = [];
+      let achievementsUnlocked = new Set();
+      let totalCalcs = 0;
+
+      // ==================== Canvas ====================
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 200));
+
+      // ==================== التركيز ====================
+      inputEl.focus();
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('button') && !e.target.closest('input')) {
+          inputEl.focus();
+        }
+      });
+
+      // ==================== الأحداث ====================
+      solveBtn.addEventListener('click', calculate);
+      clearBtn.addEventListener('click', clearAll);
+      inputEl.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') calculate();
+        if (e.key === 'Escape') resetAll();
+      });
+
+      // ==================== تحديث شريط الفوضى ====================
+      function updateChaosUI() {
+        const pct = Math.min((chaos / maxChaos) * 100, 100);
+        chaosFill.style.width = pct + '%';
+        chaosLabel.textContent = 'LV.' + chaos;
+        if (chaos >= 10) chaosLabel.style.color = '#ff0055';
+        else if (chaos >= 5) chaosLabel.style.color = '#ffcc00';
+        else chaosLabel.style.color = '#666';
+      }
+
+      // ==================== الحساب ====================
+      function calculate() {
+        const val = inputEl.value.trim();
+        if (!val) {
+          shakeInput();
+          return;
+        }
+
+        chaos = Math.min(chaos + 1, maxChaos);
+        totalCalcs++;
+        updateChaosUI();
+
+        // سجل العمليات
+        history.unshift(val);
+        if (history.length > 5) history.pop();
+        showHistory(val);
+
+        // رموز سرية
+        const lowerVal = val.toLowerCase();
+        if (val === '666') return special('WELCOME TO HELL', true);
+        if (lowerVal === 'help') return special('NO ESCAPE', true);
+        if (val === '1337') return special('L33T H4X0R', true);
+        if (lowerVal === 'love') return special('SYSTEM ERROR: LOVE NOT FOUND', true);
+        if (lowerVal === 'skull' || lowerVal === '☠️') return special('💀 YOU DIED 💀', true);
+        if (lowerVal === 'fuck' || lowerVal === 'f*ck') return special('RIGHT BACK AT YOU', true);
+        if (val === '404') return special('NOT FOUND', true);
+        if (val === '0') return special('VOID', true);
+
+        try {
+          let real = eval(val);
+          if (!isFinite(real)) return special('INFINITY LOOP', false);
+          let fake = distort(real);
+          respond(fake, val);
+        } catch (e) {
+          respond('ERR', val);
+        }
+
+        evolve();
+        checkAchievements();
+      }
+
+      // ==================== تشويه النتيجة ====================
+      function distort(real) {
+        let intensity = Math.min(chaos, 18);
+        const modes = [
+          () => real + rand(0.5, 2.5),
+          () => real - rand(0.3, 1.9),
+          () => real * (1 + Math.random() * (0.06 * intensity)),
+          () => real / (Math.random() * 2 + 0.25),
+          () => real === 4 ? 5 : real + (Math.random() > 0.5 ? 0.1 : -0.1),
+          () => Math.abs(real) * (chaos > 7 && Math.random() > 0.6 ? -1 : 1),
+        ];
+        return Number(modes[rand(0, modes.length - 1)]()).toFixed(2);
+      }
+
+      function respond(result, originalInput) {
+        const mood = getMood();
+        const dialogue = {
+          calm: [`${result}`, `= ${result}`, `~ ${result}`],
+          sarcastic: [`WOW ${result}`, `SURE ${result}`, `YEAH ${result}`],
+          angry: [`${result} ENOUGH`, `TAKE ${result}`, `UGH ${result}`],
+          broken: [`${result}${result}`, `ERR ${result}`, `???? ${result}`],
+        };
+        glitchMsg.textContent = dialogue[mood][rand(0, 2)];
+        fireGlitch();
+        addToHistoryDisplay(originalInput, result);
+      }
+
+      function getMood() {
+        if (chaos < 3) return 'calm';
+        if (chaos < 6) return 'sarcastic';
+        if (chaos < 10) return 'angry';
+        return 'broken';
+      }
+      
+          
+      // ==================== تطور الفوضى ====================
+      function evolve() {
+        if (chaos === 4) startAutoGlitch();
+        if (chaos === 7) distortUI();
+        if (chaos === 11) triggerScreenTear();
+        if (chaos >= 13 && Math.random() > 0.5) randomColorShift();
+        if (chaos >= maxChaos) fakeCrash();
+      }
+
+      function startAutoGlitch() {
+        if (autoGlitchInterval) return;
+        showAchievement('AUTO-GLITCH UNLOCKED');
+        autoGlitchInterval = setInterval(() => {
+          glitchMsg.textContent = randomPhrase();
+          fireGlitch();
+        }, 3500 + Math.random() * 2000);
+      }
+
+      function distortUI() {
+        showAchievement('UI CORRUPTED');
+        document.body.style.filter = `hue-rotate(${rand(0,360)}deg) contrast(1.3)`;
+        calcBox.style.transform = `skew(${rand(-4,4)}deg) scale(0.97)`;
+        setTimeout(() => {
+          document.body.style.filter = '';
+          calcBox.style.transform = '';
+        }, 500);
+      }
+
+      function triggerScreenTear() {
+        screenTear.style.opacity = '1';
+        screenTear.style.top = rand(10, 80) + '%';
+        screenTear.style.background = `rgba(${rand(0,255)},${rand(0,255)},${rand(0,255)},0.6)`;
+        setTimeout(() => { screenTear.style.opacity = '0'; }, 300);
+      }
+
+      function randomColorShift() {
+        body.style.backgroundColor = `rgb(${rand(0,15)},${rand(0,8)},${rand(8,25)})`;
+        setTimeout(() => { body.style.backgroundColor = ''; }, 200);
+      }
+
+      function fakeCrash() {
+        clearInterval(autoGlitchInterval);
+        autoGlitchInterval = null;
+        showAchievement('SYSTEM FAILURE');
+        body.innerHTML = `
+          <div style="
+            color:#ff0044; 
+            font-family:monospace; 
+            text-align:center; 
+            padding:40px 20px; 
+            background:#000; 
+            min-height:100vh; 
+            min-height:100dvh;
+            display:flex; 
+            flex-direction:column; 
+            justify-content:center; 
+            align-items:center;
+            font-size:clamp(18px,3.5vw,26px);">
+            <p style="font-size:clamp(40px,8vw,70px);">⚠️</p>
+            <p>SYSTEM FAILURE</p>
+            <p style="color:#00ffff;font-size:clamp(14px,2.5vw,20px);">MEMORY CORRUPTED</p>
+            <p style="font-size:clamp(12px,2vw,16px);margin-top:30px;color:#555;">CALCULATIONS: ${totalCalcs}</p>
+            <p style="font-size:clamp(12px,2vw,16px);color:#555;">MAX CHAOS: LV.${chaos}</p>
+            <button onclick="location.reload()" style="
+              margin-top:25px;
+              padding:12px 28px;
+              font-family:monospace;
+              background:#1a000a;
+              color:#ff0055;
+              border:2px solid #ff0055;
+              cursor:pointer;
+              font-size:clamp(14px,2.5vw,18px);
+              letter-spacing:2px;">🔄 REBOOT</button>
+          </div>
+        `;
+      }
+
+      // ==================== الإنجازات ====================
+      function checkAchievements() {
+        const checks = [
+          { id: 'first', cond: totalCalcs >= 1, msg: '🏆 FIRST BLOOD' },
+          { id: 'five', cond: totalCalcs >= 5, msg: '🔥 5 CALCS DEEP' },
+          { id: 'ten', cond: totalCalcs >= 10, msg: '💀 ADDICTED' },
+          { id: 'chaos5', cond: chaos >= 5, msg: '🌈 CHAOS UNLEASHED' },
+          { id: 'chaos10', cond: chaos >= 10, msg: '👹 MAXIMUM CHAOS' },
+          { id: 'secret', cond: history.some(h => h === '666' || h.toLowerCase() === 'love'),
+            msg: '🔮 SECRET FOUND' },
+        ];
+        checks.forEach(c => {
+          if (c.cond && !achievementsUnlocked.has(c.id)) {
+            achievementsUnlocked.add(c.id);
+            showAchievement(c.msg);
+          }
+        });
+      }
+
+      function showAchievement(msg) {
+        achievement.textContent = msg;
+        achievement.classList.add('show');
+        setTimeout(() => achievement.classList.remove('show'), 2200);
+      }
+
+      // ==================== السجل ====================
+      function showHistory(currentInput) {
+        historyToast.textContent = '📜 ' + currentInput + ' → ?';
+        historyToast.classList.add('show');
+        setTimeout(() => historyToast.classList.remove('show'), 1800);
+      }
+
+      function addToHistoryDisplay(input, result) {
+        historyToast.textContent = '📜 ' + input + ' → ' + result;
+        historyToast.classList.add('show');
+        setTimeout(() => historyToast.classList.remove('show'), 2200);
+      }
+
+      // ==================== التأثيرات ====================
+      function fireGlitch() {
+        glitchMsg.classList.remove('active');
+        void glitchMsg.offsetWidth;
+        glitchMsg.classList.add('active');
+
+        calcBox.classList.add('shake');
+        body.classList.add('bg-flash');
+
+        // RGB split
+        rgbLayer.classList.add('active');
+        setTimeout(() => rgbLayer.classList.remove('active'), 600);
+
+        // Flash overlay
+        overlayFlash.style.opacity = '1';
+        setTimeout(() => { overlayFlash.style.opacity = '0'; }, 150);
+
+        // اهتزاز الهاتف
+        triggerVibration();
+
+        spawnPixels(40 + chaos * 2);
+        drawSlices(8 + chaos);
+        playNoise();
+
+        if (glitchTimeout) clearTimeout(glitchTimeout);
+        glitchTimeout = setTimeout(() => {
+          glitchMsg.classList.remove('active');
+          calcBox.classList.remove('shake');
+          body.classList.remove('bg-flash');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }, 1700);
+
+        inputEl.value = '';
+        inputEl.focus();
+      }
+
+      function triggerVibration() {
+        if (navigator.vibrate) {
+          const pattern = chaos > 7 ? [30, 50, 30, 50, 30] : [20, 40, 20];
+          navigator.vibrate(pattern);
+        }
+      }
+
+      function spawnPixels(count) {
+        const chars = ['█', '▓', '▒', '░', '◆', '◇', '○', '●', '×', '+', '=', '╳', '⬡', '△'];
+        const colors = ['#ff0055', '#00ffff', '#39ff14', '#ffcc00', '#b300ff', '#ff6600'];
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement('span');
+          p.className = 'pixel';
+          p.textContent = chars[rand(0, chars.length - 1)];
+          p.style.left = Math.random() * 100 + '%';
+          p.style.top = -(Math.random() * 30) + 'px';
+          p.style.animationDuration = (Math.random() * 2.5 + 1) + 's';
+          p.style.color = colors[rand(0, colors.length - 1)];
+          p.style.fontSize = (Math.random() * 16 + 13) + 'px';
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), 3500);
+        }
+      }
+
+      function drawSlices(count) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < count; i++) {
+          const y = Math.random() * canvas.height;
+          ctx.fillStyle = `rgba(${rand(80,255)}, ${rand(0,50)}, ${rand(80,255)}, ${Math.random()*0.6+0.2})`;
+          ctx.fillRect(-30, y, canvas.width + 60, rand(6, 30));
+        }
+        // بعض الخطوط المتقطعة
+        for (let i = 0; i < count / 2; i++) {
+          const x = Math.random() * canvas.width;
+          ctx.strokeStyle = `rgba(255,0,85,${Math.random()*0.7})`;
+          ctx.lineWidth = rand(1, 3);
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x + rand(-40, 40), canvas.height);
+          ctx.stroke();
+        }
+      }
+
+      function playNoise() {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const a = new AudioContext();
+          const bufferSize = 4096;
+          const node = a.createScriptProcessor(bufferSize, 1, 1);
+          const gainNode = a.createGain();
+          gainNode.gain.value = 0.06;
+          node.connect(gainNode);
+          gainNode.connect(a.destination);
+          node.onaudioprocess = (e) => {
+            const out = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < out.length; i++) {
+              out[i] = (Math.random() * 2 - 1) * 0.7;
+            }
+          };
+          setTimeout(() => {
+            node.disconnect();
+            gainNode.disconnect();
+            a.close();
+          }, 180);
+        } catch (ignore) {}
+      }
+
+      // ==================== وظائف مساعدة ====================
+      function randomPhrase() {
+        const list = [
+          'STOP', 'WHY', 'ERROR', 'NO LOGIC', "DON'T TRUST ME",
+          'HAHA', 'GO AWAY', 'REALLY?', 'AGAIN?', 'ENOUGH',
+        ];
+        return list[rand(0, list.length - 1)];
+      }
+
+      function special(txt, bigEffect) {
+        chaos = Math.min(chaos + (bigEffect ? 2 : 1), maxChaos);
+        updateChaosUI();
+        glitchMsg.textContent = txt;
+        fireGlitch();
+        if (bigEffect) triggerScreenTear();
+        checkAchievements();
+      }
+
+      function shakeInput() {
+        inputEl.classList.add('input-error');
+        if (navigator.vibrate) navigator.vibrate(15);
+        setTimeout(() => inputEl.classList.remove('input-error'), 300);
+      }
+
+      function clearAll() {
+        inputEl.value = '';
+        inputEl.focus();
+        glitchMsg.classList.remove('active');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        overlayFlash.style.opacity = '0';
+        screenTear.style.opacity = '0';
+        if (navigator.vibrate) navigator.vibrate([10, 20, 10]);
+      }
+
+      function resetAll() {
+        chaos = 0;
+        updateChaosUI();
+        if (autoGlitchInterval) clearInterval(autoGlitchInterval);
+        autoGlitchInterval = null;
+        document.body.style.filter = '';
+        calcBox.style.transform = '';
+        document.body.style.backgroundColor = '';
+        location.reload();
+      }
+
+      function rand(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // ==================== بدء التشغيل ====================
+      updateChaosUI();
+
+      // رسالة ترحيب صغيرة
+      setTimeout(() => {
+        historyToast.textContent = '👋 TRY: 666, love, skull, 1337';
+        historyToast.classList.add('show');
+        setTimeout(() => historyToast.classList.remove('show'), 2500);
+      }, 600);
+    })();
+  </script>
+</body>
+</html>
+      
